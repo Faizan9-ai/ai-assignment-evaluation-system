@@ -1,4 +1,4 @@
-AI-Powered Assignment Evaluation System using n8n + Groq Llama Models
+# AI-Powered Assignment Evaluation System using n8n + Groq Llama Models
 📌 Project Overview
 
 The AI-Powered Assignment Evaluation System is an interactive GenAI workflow automation project built using n8n, Groq-hosted Llama models, and prompt-engineered AI evaluation pipelines.
