@@ -1,0 +1,194 @@
+{
+  "name": "AI Assignment Evaluation System",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI Assignment Evaluation Upload Form",
+        "formDescription": "Upload student assignment ZIP file for automated AI-based evaluation.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Student Name"
+            },
+            {
+              "fieldLabel": "Module Name"
+            },
+            {
+              "fieldLabel": "Assignment ZIP",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9b72635d-c454-4039-97a1-3431e38c4fd0",
+      "name": "On form submission",
+      "webhookId": "4acf0ae6-5810-4a89-8399-8f280b8c8632"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "Assignment_ZIP"
+      },
+      "type": "n8n-nodes-base.compression",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "bf1f40fb-4954-40db-8a41-ffa518616f13",
+      "name": "Compression"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "423799d2-9941-4e95-9560-11ab8f5b8a2a",
+              "name": "assignment_text",
+              "value": "Q1. What is Python? Answer: Python is a programming language.  Q2. What is Machine Learning? Answer: Machine Learning is a branch of AI that learns from data.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        0
+      ],
+      "id": "18e82066-db14-4467-bcc3-7401161d75f7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI Assignment Evaluator.\n\nEvaluate the following assignment based on:\n- Technical Understanding\n- Clarity\n- Accuracy\n- Completeness\n\nReturn the result in this EXACT format:\n\nScore: X/10\n\nStrengths:\n- point 1\n- point 2\n\nWeaknesses:\n- point 1\n- point 2\n\nFinal Feedback:\nshort paragraph\n\nStatus:\nPass or Needs Improvement\n\nAssignment:\n{{$json[\"assignment_text\"]}}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        640,
+        0
+      ],
+      "id": "be273934-4bc9-4b50-a6a0-5ca80babc7bc",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        576,
+        208
+      ],
+      "id": "0a6d30b6-3ab5-479e-b978-5c4c8eb25dc9",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "8vPpkWu2SPykoxZz",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "AI Assignment Evaluation Result",
+        "completionMessage": "={{$json[\"text\"]}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        992,
+        0
+      ],
+      "id": "6855474a-e907-451f-812c-5317e55c4e1a",
+      "name": "Form",
+      "webhookId": "6a5acb5b-d081-46cc-a578-b5f92cde139a"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Compression",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compression": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0754a0c0-3508-4055-81f4-18458f88072a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a636c30064636a5063d012b9b13d8adc3313a4a45e8fd973d824f400400b7841"
+  },
+  "id": "obMQ6FEUAubaZH7o",
+  "tags": []
+}
